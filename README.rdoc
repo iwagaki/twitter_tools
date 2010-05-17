@@ -1,6 +1,10 @@
-= LICENSE
+= TESTING ENVIRONMENT
+* Ruby 1.8.7
+* libgtk2-dev 2.20.0-0ubuntu4
+* libgtk2-ruby1.8 0.19.3-1ubuntu3
 
-* This software is under MIT Licenese.
-* The icon is under GNU General Public License
+= LICENSE
+* MIT Licenese
+* The icon file is under GNU General Public License
  openPhone v1, by walrick
  http://walrick.deviantART.com
