@@ -71,11 +71,14 @@ window.set_default_size(500,-1)
 
 window.move((Gdk.screen_width - window.default_width) / 2, (Gdk.screen_height - window.default_height) / 2)
 
-icon_pixbuf = Gdk::Pixbuf.new("./icon.ico")
+file = __FILE__
+file = File.readlink(file) if File.ftype(__FILE__) == 'link'
+dir = File.dirname(file)
+icon_pixbuf = Gdk::Pixbuf.new("#{dir}/icon.ico")
 icon_list = [icon_pixbuf]
 Gtk::Window.set_default_icon_list(icon_list)
 
-icon_db = PStore.new('icon.db')
+icon_db = PStore.new("#{dir}/icon.db")
 
 #window.set_position(Gtk::WIN_POS_CENTER)
 window.signal_connect('key_press_event') do |widget, event|
