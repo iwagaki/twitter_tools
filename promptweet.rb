@@ -205,7 +205,6 @@ entry.signal_connect("activate") {
               loader.last_write(image)
 #              puts "using cache #{image_url}"
             else
-              loader = Gdk::PixbufLoader.new
               open(image_url) { |f|
                 image = f.read
                 icon_db[image_url] = image
