@@ -242,23 +242,23 @@ entry.signal_connect("activate") {
                                      )
         status = JSON.parse(response.body)
         # puts "end to post"
+        # TODO Make an option to get entire friend timeline
+        # TODO Make an option to disable auto-deleting for specific tweet
+        # TODO Make if-condition to disable auto-deleting for replies
+        status_id = status['id']
+        delete_queue.push(status_id)
+        Gtk.timeout_add(5*60000) {
+          status_id = delete_queue.pop
+          response = access_token.post(
+                                       "http://twitter.com/statuses/destroy/#{status_id}.json"
+                                       )
+          false
+        }
+
         false
       end
     end
-    # status_id = status['id']
 
-    # delete_queue.push(status_id)
-
-    # TODO Make an option to get entire friend timeline
-    # TODO Make an option to disable auto-deleting for specific tweet
-    # TODO Make if-condition to disable auto-deleting for replies
-    Gtk.timeout_add(5*60000) {
-      status_id = delete_queue.pop
-      response = access_token.post(
-                                   "http://twitter.com/statuses/destroy/#{status_id}.json"
-                                   )
-      false
-    }
 
     # req = Net::HTTP::Post.new("/statuses/update.xml")
     # req.basic_auth ENV['TWITTER_USERNAME'], ENV['TWITTER_PASSWORD']
