@@ -185,8 +185,7 @@ entry.signal_connect("activate") {
 
       replies_thread = Thread.new do
         # puts "start to get replies"
-        response = access_token.get('http://twitter.com/statuses/replies.json',
-                                    'count'=> '5')
+        response = access_token.get('http://twitter.com/statuses/replies.json?count=5')
         JSON.parse(response.body).each do |status|
           # puts "!!"
           user = status['user']
