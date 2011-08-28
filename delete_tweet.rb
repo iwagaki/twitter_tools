@@ -57,7 +57,7 @@ loop do
       user = status['user']['screen_name']
       status_id = status['id']
       ctime = Time.parse(status['created_at'])
-      th = Time.now - 60*60*6
+      th = Time.now - 60*60*8
       if (th > ctime)
         puts "#{index}: #{user}:#{status_id}:#{ctime} #{status['text']}" if $DEBUG
         begin
