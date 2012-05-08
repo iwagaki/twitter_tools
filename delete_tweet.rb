@@ -1,7 +1,7 @@
-#!/usr/bin/ruby -Ku
+#!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2010 iwagaki@users.sourceforge.net
+# Copyright (c) 2010-2012 iwagaki@users.sourceforge.net
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,8 @@ CONSUMER_SECRET = ENV['PROMPTWEET_CONSUMER_SECRET']
 ACCESS_TOKEN = ENV['PROMPTWEET_ACCESS_TOKEN']
 ACCESS_TOKEN_SECRET = ENV['PROMPTWEET_ACCESS_TOKEN_SECRET']
 
+EXPIRED_TIME = 60 * 60 * 24 # 8hrs
+
 consumer = OAuth::Consumer.new(
   CONSUMER_KEY,
   CONSUMER_SECRET,
@@ -57,7 +59,7 @@ loop do
       user = status['user']['screen_name']
       status_id = status['id']
       ctime = Time.parse(status['created_at'])
-      th = Time.now - 60*60*8
+      th = Time.now - $EXPIRED_TIME
       if (th > ctime)
         puts "#{index}: #{user}:#{status_id}:#{ctime} #{status['text']}" if $DEBUG
         begin
