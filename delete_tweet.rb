@@ -34,44 +34,69 @@ ACCESS_TOKEN_SECRET = ENV['PROMPTWEET_ACCESS_TOKEN_SECRET']
 
 EXPIRED_TIME = 60 * 60 * 24
 
-consumer = OAuth::Consumer.new(
-  CONSUMER_KEY,
-  CONSUMER_SECRET,
-  :site => 'http://twitter.com'
-)
+class TwitterCtrl
+  def initialize
+    consumer = OAuth::Consumer.new(CONSUMER_KEY,
+                                   CONSUMER_SECRET,
+                                   :site => 'http://twitter.com')
 
-access_token = OAuth::AccessToken.new(
-  consumer,
-  ACCESS_TOKEN,
-  ACCESS_TOKEN_SECRET
-)
-
-loop do
-  begin
-    response = access_token.get("http://twitter.com/statuses/user_timeline.json?count=200")
-    # TODO: is it ok for fixed count?
-  rescue
-    break
+    @access_token = OAuth::AccessToken.new(consumer,
+                                          ACCESS_TOKEN,
+                                          ACCESS_TOKEN_SECRET)
+    raise unless @access_token != nil
   end
 
-  begin
-    JSON.parse(response.body).each_with_index do |status, index|
-      user = status['user']['screen_name']
-      status_id = status['id']
-      ctime = Time.parse(status['created_at'])
-      th = Time.now - EXPIRED_TIME
-      if (th > ctime)
-        puts "#{index}: #{user}:#{status_id}:#{ctime} #{status['text']}" if $DEBUG
-        begin
-          access_token.post("http://twitter.com/statuses/destroy/#{status_id}.json")
-          sleep 2
-        rescue
-          sleep 5
+  def get(url)
+    return @access_token.get(url)
+  end
+
+  def post(url)
+    return @access_token.post(url)
+  end
+
+  def get_user_timeline(count)
+    return get("http://twitter.com/statuses/user_timeline.json?count=#{count}")
+  end
+
+  def delete_status(status_id)
+    return post("http://twitter.com/statuses/destroy/#{status_id}.json")
+  end
+end
+
+def main
+  ctrl = TwitterCtrl.new
+
+  loop do
+    begin
+      response = ctrl.get_user_timeline(200)
+      # TODO: is it ok to use a fixed count?
+    rescue
+      break
+    end
+
+    begin
+      JSON.parse(response.body).each_with_index do |status, index|
+        user = status['user']['screen_name']
+        status_id = status['id']
+        ctime = Time.parse(status['created_at'])
+        th = Time.now - EXPIRED_TIME
+        if (th > ctime)
+          puts "#{index}: #{user}:#{status_id}:#{ctime} #{status['text']}" if $DEBUG
+          begin
+            ctrl.delete_status(status_id)
+            sleep 2
+          rescue
+            sleep 5
+          end
         end
       end
+    rescue
+      break
     end
-  rescue
     break
   end
-  break
+end
+
+if __FILE__ == $0
+  main
 end
