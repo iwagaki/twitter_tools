@@ -34,6 +34,28 @@ ACCESS_TOKEN_SECRET = ENV['PROMPTWEET_ACCESS_TOKEN_SECRET']
 
 EXPIRED_TIME = 60 * 60 * 24
 
+class Tweet
+  def initialize(status)
+    @status = status
+  end
+
+  def get_status_id
+    return status['id']
+  end
+
+  def get_user
+    return status['user']['screen_name']
+  end
+
+  def get_created_time
+    return Time.parse(status['created_at'])
+  end
+
+  def is_expired(second)
+    return (Time.now - second > get_created_time)
+  end
+end
+
 class TwitterCtrl
   def initialize
     consumer = OAuth::Consumer.new(CONSUMER_KEY,
@@ -61,6 +83,10 @@ class TwitterCtrl
   def delete_status(status_id)
     return post("http://twitter.com/statuses/destroy/#{status_id}.json")
   end
+
+  def delete(tweet)
+    return delete_status(tweet.get_status_id)
+  end
 end
 
 def main
@@ -76,14 +102,14 @@ def main
 
     begin
       JSON.parse(response.body).each_with_index do |status, index|
-        user = status['user']['screen_name']
-        status_id = status['id']
-        ctime = Time.parse(status['created_at'])
-        th = Time.now - EXPIRED_TIME
-        if (th > ctime)
+        tweet = Tweet.new(status)
+        if (tweet.is_expired(EXPIRED_TIME))
+          user = tweet.get_user
+          status_id = tweet.get_status_id
+          ctime = tweet.get_created_time
           puts "#{index}: #{user}:#{status_id}:#{ctime} #{status['text']}" if $DEBUG
           begin
-            ctrl.delete_status(status_id)
+            ctrl.delete(tweet)
             sleep 2
           rescue
             sleep 5
