@@ -40,15 +40,15 @@ class Tweet
   end
 
   def get_status_id
-    return status['id']
+    return @status['id']
   end
 
   def get_user
-    return status['user']['screen_name']
+    return @status['user']['screen_name']
   end
 
   def get_created_time
-    return Time.parse(status['created_at'])
+    return Time.parse(@status['created_at'])
   end
 
   def is_expired(second)
