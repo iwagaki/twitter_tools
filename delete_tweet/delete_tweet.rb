@@ -36,7 +36,7 @@ class Tweet
   end
 end
 
-class TwitterCtrl
+class TwitterSession
   def initialize
     consumer = OAuth::Consumer.new(CONSUMER_KEY,
                                    CONSUMER_SECRET,
@@ -70,11 +70,11 @@ class TwitterCtrl
 end
 
 def main
-  ctrl = TwitterCtrl.new
+  twitter_session = TwitterSession.new
 
   loop do
     begin
-      response = ctrl.get_user_timeline(200)
+      response = twitter_session.get_user_timeline(200)
       # TODO: is it ok to use a fixed count?
     rescue
       break
@@ -89,7 +89,7 @@ def main
           ctime = tweet.get_created_time
           puts "#{index}: #{user}:#{status_id}:#{ctime} #{status['text']}" if $DEBUG
           begin
-            ctrl.delete(tweet)
+            twitter_session.delete(tweet)
             sleep 2
           rescue
             sleep 5
