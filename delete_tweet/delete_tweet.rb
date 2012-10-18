@@ -57,11 +57,11 @@ class TwitterSession
   end
 
   def get_user_timeline(count)
-    return get("http://twitter.com/statuses/user_timeline.json?count=#{count}")
+    return get("https://api.twitter.com/1.1/statuses/user_timeline.json?count=#{count}")
   end
 
   def delete_status(status_id)
-    return post("http://twitter.com/statuses/destroy/#{status_id}.json")
+    return post("https://api.twitter.com/1.1/statuses/destroy/#{status_id}.json")
   end
 
   def delete(tweet)
@@ -74,8 +74,9 @@ def main
 
   loop do
     begin
-      response = twitter_session.get_user_timeline(200)
       # TODO: is it ok to use a fixed count?
+      response = twitter_session.get_user_timeline(200)
+      break if response.class.name != Net::HTTPOK
     rescue
       break
     end
