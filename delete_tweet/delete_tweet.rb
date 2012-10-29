@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
+# $:.unshift '/usr/local/rvm/gems/ruby-1.9.3-p194/gems/oauth-0.4.7/lib/'
+
 require 'rubygems'
 require 'oauth'
 require 'json'
@@ -76,7 +78,7 @@ def main
     begin
       # TODO: is it ok to use a fixed count?
       response = twitter_session.get_user_timeline(200)
-      break if response.class.name != Net::HTTPOK
+      break if not response.instance_of? Net::HTTPOK
     rescue
       break
     end
