@@ -14,7 +14,8 @@ CONSUMER_SECRET = ENV['PROMPTWEET_CONSUMER_SECRET']
 ACCESS_TOKEN = ENV['PROMPTWEET_ACCESS_TOKEN']
 ACCESS_TOKEN_SECRET = ENV['PROMPTWEET_ACCESS_TOKEN_SECRET']
 
-EXPIRED_TIME = 60 * 60 * 24
+STATUS_EXPIRED_TIME = 60 * 30
+REPLY_EXPIRED_TIME = 60 * 60 * 24
 
 class Tweet
   def initialize(status)
@@ -35,6 +36,10 @@ class Tweet
 
   def is_expired(second)
     return (Time.now - second > get_created_time)
+  end
+
+  def is_reply
+    return (@status['in_reply_to_user_id'] != nil)
   end
 end
 
@@ -86,7 +91,7 @@ def main
     begin
       JSON.parse(response.body).each_with_index do |status, index|
         tweet = Tweet.new(status)
-        if (tweet.is_expired(EXPIRED_TIME))
+        if (tweet.is_expired(tweet.is_reply ? REPLY_EXPIRED_TIME : STATUS_EXPIRED_TIME))
           user = tweet.get_user
           status_id = tweet.get_status_id
           ctime = tweet.get_created_time
