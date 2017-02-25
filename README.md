@@ -10,7 +10,6 @@ Testing environment
 
 License
 -------
-- MIT License
 - The icon file was created by the following author and it is under GNU General Public License
     - openPhone v1, by walrick
     - http://walrick.deviantART.com
