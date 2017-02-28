@@ -68,9 +68,7 @@ def post(method, url):
     return urllib2.urlopen(request)
 
 
-# Test
 result = post("GET", "https://api.twitter.com/1.1/statuses/user_timeline.json")
-
 statuses = json.loads(result.read())
 
 for status in statuses:
@@ -85,6 +83,4 @@ for status in statuses:
 
     expired_sec = REPLY_EXPIRED_TIME if is_reply else STATUS_EXPIRED_TIME
     if utc_delta_sec > expired_sec:
-        url = "https://api.twitter.com/1.1/statuses/destroy/%s.json" % status_id
-        print url
-        print post("POST", url)
+        post("POST", "https://api.twitter.com/1.1/statuses/destroy/%s.json" % status_id)
