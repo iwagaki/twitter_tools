@@ -70,12 +70,13 @@ def post(method, url):
 
 result = post("GET", "https://api.twitter.com/1.1/statuses/user_timeline.json")
 statuses = json.loads(result.read())
+print statuses
 
 for status in statuses:
-    status_id = status['id']
+    status_id = status["id"]
 
     is_reply = True if status['in_reply_to_user_id'] is not None else False
-    created_at = status['created_at']
+    created_at = status["created_at"]
     # Sun Feb 26 21:57:11 +0000 2017
     utc_created_at = datetime.datetime.strptime(created_at, "%a %b %d %H:%M:%S +0000 %Y")
     utc_now = datetime.datetime.utcnow()
@@ -84,3 +85,6 @@ for status in statuses:
     expired_sec = REPLY_EXPIRED_TIME if is_reply else STATUS_EXPIRED_TIME
     if utc_delta_sec > expired_sec:
         post("POST", "https://api.twitter.com/1.1/statuses/destroy/%s.json" % status_id)
+        print "%s: DELETED: %s" % (status["id"], status["text"])
+    else:
+        print "%s: SKIPPED: %s" % (status["id"], status["text"])
